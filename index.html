@@ -11,7 +11,7 @@
 <body>
     <img id="settings" class="settings" src="./images/icon_gear.png" alt="">
     <div class="top-scoreboard">
-        <h1>TOP SCORE</h1>
+        <h1 id="top-score-header">TOP SCORE</h1>
         <table class="top-table">
             <tr class="top-tr">
                 <td id="top-initials" class="top-td">MWM</td>
@@ -38,10 +38,13 @@
     <div id="settingsModal" class="modal">
         <!-- Modal content -->
         <div class="modal-content">
-        <span class="close">&times;</span>
-        <div class="settings-content">
-            <p>Settings</p>
-        </div>
+            <span class="close">&times;</span>
+            <div class="settings-content">
+                <p>Settings</p>
+            </div>
+            <div>
+                <button id="reset" class ="btn">Reset</button>
+            </div>
         </div>
     </div>
     <div id="hiScoreModal" class="modal">
@@ -53,8 +56,20 @@
                 <div class ="enter-initials">
                     <h6>Enter Your Initials</h6>
                     <input type="text" id="initials" name="initials" maxlength="3" minlength="3">
-                    <button id="submit">ENTER</button>
+                    <button id="submit" class="btn">ENTER</button>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div id="fullLeaderboardModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="leader-content">
+                <h2>Leaderboard</h2>
+            </div>
+                <table id="leader-table" class="leader-table"></table>
+            <div>
+
             </div>
         </div>
     </div>

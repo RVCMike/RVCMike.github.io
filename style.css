@@ -428,7 +428,7 @@ img {
   color: wheat;
 }
 
-#submit {
+.btn {
   font-family: "Russo One", sans-serif;
   text-transform: uppercase;
   margin: 0.1em;
@@ -436,19 +436,56 @@ img {
   font-size: 0.8em;
   width: 4em;
   text-align: center;
-  border: 0.1em solid;
+  border-right: 0.1em solid;
+  border-bottom: 0.1em solid;
   border-color: darkmagenta magenta;
   outline: 0.1em ridge cyan;
   outline-offset: 0.05em;
   background: var(--dark-navy);
   color: wheat;
+  opacity: 1;
 }
-#submit:hover,
-#submit:focus {
+.btn:hover,
+.btn:focus {
   color: var(--dark-navy);
   background: var(--pink2);
   text-decoration: none;
   cursor: pointer;
+}
+.btn-click {
+  opacity: 0.8;
+}
+
+#full-Leader-Modal {
+  flex-direction: column;
+}
+
+#full-Leader-Modal h2 {
+  font-size: 3em;
+  max-height: 20%;
+  justify-self: flex-start;
+}
+
+#full-Leader-Modal h6 {
+  font-family: "Russo One", sans-serif;
+  text-transform: uppercase;
+  margin: 0.2em;
+  padding: 0.1em;
+  font-size: 1em;
+}
+
+#leader-table {
+  font-family: digital;
+  font-size: 1.3em;
+  margin: auto;
+  height: 100%;
+  width: 100%;
+  border-radius: 20px;
+  padding: 10px 10px 10px;
+  border: 0.1em solid;
+  border-color: darkmagenta magenta;
+  outline: 0.1em ridge cyan;
+  outline-offset: 0.05em;
 }
 .close:hover,
 .close:focus {

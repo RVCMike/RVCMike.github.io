@@ -1,3 +1,4 @@
+const LEADERBOARD = "leaderboard";
 const color = ["red", "blue", "yellow", "green"];
 const buttons = document.getElementsByClassName("simon-btn");
 const startButton = document.getElementById("start");
@@ -12,6 +13,7 @@ const settingsModal = document.getElementById("settingsModal");
 const hiScoreModal = document.getElementById("hiScoreModal");
 const playerInitials = document.getElementById("initials");
 const rankModal = document.getElementById("yourRank");
+const fullLeaderboard = document.getElementById("fullLeaderboardModal");
 const offOpacity = 0.5;
 const onOpacity = 1;
 const maxAudioChannels = 6;
@@ -38,7 +40,7 @@ var playerScore = 0;
 var leaderboardPosition = 6;
 var currentPress = -1;
 var simonSays = new Array();
-var leaderboard = new Array();
+var leaderboardArray = new Array();
 var audio = [];
 var audioChannels = [];
 var currentAudioChannel = 0;
@@ -53,12 +55,23 @@ gameOverAudio.volume = 0.2;
 
 //this populates the leadboard with no values
 //TO-DO Persistent leaderboard
-for (let a = 0; a < 5; a++) {
-  let obj = {
-    initials: "---",
-    score: 0,
-  };
-  leaderboard[a] = obj;
+//localStorage.clear();
+const loadLocal = localStorage.getItem(LEADERBOARD);
+console.log(loadLocal);
+if (loadLocal === null || loadLocal === undefined) {
+  for (let a = 0; a < 5; a++) {
+    let obj = {
+      initials: "---",
+      score: 0,
+    };
+    leaderboardArray[a] = obj;
+  }
+} else {
+  var obj = JSON.parse(loadLocal);
+  for (var i in obj) {
+    leaderboardArray.push(obj[i]);
+  }
+  console.log(leaderboardArray);
 }
 updateLeaderboard();
 
@@ -96,6 +109,11 @@ document.onclick = (clickEvent) => {
   }
   if (clickEvent.target.id == "submit") {
     closeLeaderModal();
+  }
+  if (clickEvent.target.id == "reset") clearLeaderboard();
+  if (clickEvent.target.id.includes("top-")) showFullLeaderboard();
+  if (clickEvent.target == fullLeaderboard) {
+    fullLeaderboard.style.display = "none";
   }
 };
 
@@ -305,31 +323,45 @@ function buttonEffect(buttonIndex) {
 function updateLeaderboard() {
   leaderboardPosition = 6;
   console.log(`Score: ${playerScore}`);
-  leaderboard
-    .slice()
-    .reverse()
-    .forEach(function (obj) {
-      if (playerScore > obj.score) {
-        leaderboardPosition = leaderboard.indexOf(obj);
-      }
-    });
+  for (let r = 4; r >= 0; r--) {
+    if (playerScore > leaderboardArray[r].score) {
+      leaderboardPosition = r;
+    }
+  }
   console.log("New Rank: ", leaderboardPosition);
   if (leaderboardPosition != 6) {
-    leaderboard.insert(
+    leaderboardArray.insert(
       leaderboardPosition,
       leader(leaderboardPosition, playerInitials.value, playerScore)
     );
-    leaderboard.pop();
+    leaderboardArray.pop();
   }
-  topInitials.innerText = leaderboard[0]["initials"];
-  topScore.innerText = padNum(leaderboard[0]["score"]);
+  saveLeaderboard();
+  updateTopScore();
+}
+
+function clearLeaderboard() {
+  for (let a = 0; a < 5; a++) {
+    let obj = {
+      initials: "---",
+      score: 0,
+    };
+    leaderboardArray[a] = obj;
+  }
+  saveLeaderboard();
+  updateTopScore();
 }
 
 function closeLeaderModal() {
-  leaderboard[leaderboardPosition]["initials"] = playerInitials.value;
-  topInitials.innerText = leaderboard[0]["initials"];
-  topScore.innerText = padNum(leaderboard[0]["score"]);
+  leaderboardArray[leaderboardPosition].initials = playerInitials.value;
+  saveLeaderboard();
+  updateTopScore();
   hiScoreModal.style.display = "none";
+}
+
+function updateTopScore() {
+  topInitials.innerText = leaderboardArray[0].initials;
+  topScore.innerText = padNum(leaderboardArray[0].score);
 }
 
 function leader(rank, initials, score) {
@@ -340,7 +372,30 @@ function leader(rank, initials, score) {
   return newLeader;
 }
 
+function showFullLeaderboard() {
+  fullLeaderboard.style.display = "block";
+  let leaderTable = document.getElementById("leader-table");
+  leaderTable.innerHTML = "";
+  for (let a = 0; a < 5; a++) {
+    let leftCol = document.createElement("td");
+    let middleCol = document.createElement("td");
+    let rightCol = document.createElement("td");
+    leftCol.innerText = a + 1;
+    middleCol.innerText = leaderboardArray[a].initials;
+    rightCol.innerText = padNum(leaderboardArray[a].score);
+    let row = document.createElement("tr");
+    row.appendChild(leftCol);
+    row.appendChild(middleCol);
+    row.appendChild(rightCol);
+    leaderTable.appendChild(row);
+  }
+}
+
 // helpers
+
+function saveLeaderboard() {
+  localStorage.setItem(LEADERBOARD, JSON.stringify(leaderboardArray));
+}
 
 function tooSlowTimer() {
   clearTimeout(tooSlow);
