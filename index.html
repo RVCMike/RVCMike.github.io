@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simon Says</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="./script.js" defer></script>
+</head>
+<body>
+    <img id="settings" class="settings" src="./images/icon_gear.png" alt="">
+    <div class="top-scoreboard">
+        <h1>TOP SCORE</h1>
+        <table class="top-table">
+            <tr class="top-tr">
+                <td id="top-initials" class="top-td">MWM</td>
+                <td id="top-score" class="top-td">000</td>
+            </tr>
+        </table>
+    </div>
+    <div class="housing">
+        <!-- create the workspace -->
+        <div class="buttons">
+            <button id="red" class="simon-btn"></button>
+            <button id="blue" class="simon-btn"></button>
+            <button id="yellow" class="simon-btn"></button>
+            <button id="green" class="simon-btn"></button>
+            <div class="hub">
+                <div id="score-display" class="score-display">
+                    <p id="score" class="score">RDY</p>
+                </div>
+                <button id="start" class="hub-btn start-click">Start</button>    
+            </div>
+        </div>
+    </div>
+    <!-- The Modal -->
+    <div id="settingsModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="settings-content">
+            <p>Settings</p>
+        </div>
+        </div>
+    </div>
+    <div id="hiScoreModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+            <div class="leader-content">
+                <h2>Leaderboard</h2>
+                <div><h2 id="yourRank">1</h2></div>
+                <div class ="enter-initials">
+                    <h6>Enter Your Initials</h6>
+                    <input type="text" id="initials" name="initials" maxlength="3" minlength="3">
+                    <button id="submit">ENTER</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
