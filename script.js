@@ -3,7 +3,7 @@ const isMobile = navigator.userAgent.match(
 )
   ? true
   : false;
-console.log(`Mobile: ${isMobile}`);
+//console.log(`Mobile: ${isMobile}`);
 const LEADERBOARD = "leaderboard";
 const color = ["red", "blue", "yellow", "green"];
 const buttons = document.getElementsByClassName("simon-btn");
@@ -63,7 +63,6 @@ gameOverAudio.volume = 0.2;
 //TO-DO Persistent leaderboard
 //localStorage.clear();
 const loadLocal = localStorage.getItem(LEADERBOARD);
-console.log(loadLocal);
 if (loadLocal === null || loadLocal === undefined) {
   for (let a = 0; a < 5; a++) {
     let obj = {
@@ -77,14 +76,19 @@ if (loadLocal === null || loadLocal === undefined) {
   for (var i in obj) {
     leaderboardArray.push(obj[i]);
   }
-  console.log(leaderboardArray);
+  // console.log(leaderboardArray);
 }
 updateLeaderboard();
 
 // input events
 if (isMobile) {
-  document.ontouchend = (touchEndEvents) => {
-    downPressEvent(touchEndEvents.target.id);
+  document.ontouchstart = (touchEvent) => {
+    //console.log(`Touch Press: ${touchEvent.target.id}`);
+    downPressEvent(touchEvent.target.id);
+  };
+  document.ontouchend = (touchEvent) => {
+    //console.log(`Touch Release: ${touchEvent.target.id}`);
+    releasePressEvent(touchEvent.target.id);
   };
 } else {
   document.onmousedown = (mouseDownEvent) => {
@@ -104,10 +108,23 @@ function downPressEvent(id) {
     //console.log(`Pressed: ${colorEnum} turn: ${currentPress}`);
     clearTimeout(tooSlow);
     tooSlowTimer();
-    buttonAction(colorEnum);
     checkforMatch(colorEnum);
+    if (isMobile) {
+      touchButtonPress(colorEnum);
+      buttonSound(colorEnum);
+    } else {
+      buttonAction(colorEnum);
+    }
   } else {
     colorEnum = null;
+  }
+}
+
+function releasePressEvent(id) {
+  let colorRelease = color.indexOf(id);
+  if (colorRelease >= 0 && gameActive) {
+    //console.log(`Release:${colorRelease}`);
+    touchButtonRelease(colorRelease);
   }
 }
 
@@ -206,11 +223,11 @@ function playback() {
 
 // checks to see if the player pressed the correct button at the right time
 function checkforMatch(buttonIndex) {
-  console.log(
-    `Pressed: ${buttonIndex} | Expected: ${[
-      simonSays[currentPress],
-    ]} @ ${currentPress}`
-  );
+  // console.log(
+  //   `Pressed: ${buttonIndex} | Expected: ${[
+  //     simonSays[currentPress],
+  //   ]} @ ${currentPress}`
+  // );
   if (simonSays[currentPress] == buttonIndex) {
     // console.log("Correct");
     if (currentPress == currentLevel - 1) {
@@ -336,15 +353,22 @@ function buttonEffect(buttonIndex) {
   }, pressDuration);
 }
 
+function touchButtonPress(buttonIndex) {
+  buttons[buttonIndex].style.opacity = onOpacity;
+}
+function touchButtonRelease(buttonIndex) {
+  buttons[buttonIndex].style.opacity = offOpacity;
+}
+
 function updateLeaderboard() {
   leaderboardPosition = 6;
-  console.log(`Score: ${playerScore}`);
+  //console.log(`Score: ${playerScore}`);
   for (let r = 4; r >= 0; r--) {
     if (playerScore > leaderboardArray[r].score) {
       leaderboardPosition = r;
     }
   }
-  console.log("New Rank: ", leaderboardPosition);
+  //console.log("New Rank: ", leaderboardPosition);
   if (leaderboardPosition != 6) {
     leaderboardArray.insert(
       leaderboardPosition,
@@ -447,8 +471,8 @@ function computeSizing() {
   let strSize = Math.max(isMobile ? 200 : 350, maxSize) + "px";
   let fontSize = Math.min(lower.clientHeight, lower.clientWidth) * 0.05;
   let strFont = fontSize + "px";
-  console.log(`Set Simon Size to : ${strSize}`);
-  console.log(`Set Base Font ${fontSize}`);
+  //console.log(`Set Simon Size to : ${strSize}`);
+  //console.log(`Set Base Font ${fontSize}`);
   housing.style.minHeight = strSize;
   housing.style.minWidth = strSize;
   housing.style.height = strSize;
