@@ -328,7 +328,7 @@ function buttonSound(buttonIndex) {
   if (victoryAudio.currentTime > 0) return;
   currentAudioChannel =
     currentAudioChannel >= maxAudioChannels ? 0 : currentAudioChannel++;
-  audioChannels[currentAudioChannel].setAttribute("src", audio[buttonIndex]);
+  audioChannels[currentAudioChannel] = new Audio(audio[buttonIndex]);
   audioChannels[currentAudioChannel].play();
 }
 
