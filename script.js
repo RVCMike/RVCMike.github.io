@@ -325,11 +325,19 @@ function startCountdown() {
 
 // button sound effects
 function buttonSound(buttonIndex) {
-  if (victoryAudio.currentTime > 0) return;
-  currentAudioChannel =
-    currentAudioChannel >= maxAudioChannels ? 0 : currentAudioChannel++;
-  audioChannels[currentAudioChannel] = new Audio(audio[buttonIndex]);
-  audioChannels[currentAudioChannel].play();
+  // if (victoryAudio.currentTime > 0) return;
+  // currentAudioChannel =
+  //   currentAudioChannel >= maxAudioChannels ? 0 : currentAudioChannel++;
+  // audioChannels[currentAudioChannel] = new Audio(audio[buttonIndex]);
+  // audioChannels[currentAudioChannel].play();
+  let audioElement = document.createElement(`audio`);
+  audioElement.src = audio[buttonIndex];
+  document.body.appendChild(audioElement);
+  audioElement.play();
+
+  audioElement.onended = function () {
+    this.parentNode.removeChild(this);
+  };
 }
 
 // button press effect
