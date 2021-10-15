@@ -11,26 +11,28 @@
 <body>
     <img id="settings" class="settings" src="./images/icon_gear.png" alt="">
     <div class="top-scoreboard">
-        <h1 id="top-score-header">TOP SCORE</h1>
-        <table class="top-table">
-            <tr class="top-tr">
-                <td id="top-initials" class="top-td">MWM</td>
-                <td id="top-score" class="top-td">000</td>
-            </tr>
-        </table>
+        <h1 id="top-score-header" class="top-header">TOP SCORE</h1>
+        <div class="top-table">
+            <div id="top-initials" class="top-col">MWM</div>
+            <div id="top-score" class="top-col">000</div>
+        </div>
     </div>
-    <div class="housing">
-        <!-- create the workspace -->
-        <div class="buttons">
-            <button id="red" class="simon-btn"></button>
-            <button id="blue" class="simon-btn"></button>
-            <button id="yellow" class="simon-btn"></button>
-            <button id="green" class="simon-btn"></button>
-            <div class="hub">
-                <div id="score-display" class="score-display">
-                    <p id="score" class="score">RDY</p>
+    <div class="lower-section">
+        <div class="housing">
+            <div class="housing-content">
+                <!-- create the workspace -->
+                <div class="buttons">
+                    <button id="red" class="simon-btn"></button>
+                    <button id="blue" class="simon-btn"></button>
+                    <button id="yellow" class="simon-btn"></button>
+                    <button id="green" class="simon-btn"></button>
+                    <div class="hub">
+                        <div id="score-display" class="score-display">
+                            <p id="score" class="score">RDY</p>
+                        </div>
+                        <button id="start" class="hub-btn start-click">Start</button>    
+                    </div>
                 </div>
-                <button id="start" class="hub-btn start-click">Start</button>    
             </div>
         </div>
     </div>
@@ -61,7 +63,7 @@
             </div>
         </div>
     </div>
-    <div id="fullLeaderboardModal" class="modal">
+    <div id="full-Leader-Modal" class="modal">
         <!-- Modal content -->
         <div class="modal-content">
             <div class="leader-content">

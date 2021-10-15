@@ -9,11 +9,11 @@
   margin: 0;
   padding: 0;
 }
-*::before,
+/* *::before,
 ::after {
   content: "";
   position: absolute;
-}
+} */
 
 @font-face {
   font-family: digital;
@@ -27,15 +27,13 @@
 }
 
 body {
-  min-width: 600px;
-  min-height: 600px;
-  display: flex;
-  flex-direction: column;
-  align-content: flex-start;
-  width: 100vw;
-  height: 100vh;
+  margin: 0.5vh 0.5vw;
+  display: block;
+  --bodyWidth: 99vw;
+  --bodyHeight: 99vh;
+  width: var(--bodyWidth);
+  height: var(--bodyHeight);
   background: black;
-  place-items: center;
   filter: saturate(130%) contrast(125%);
 }
 
@@ -134,7 +132,7 @@ h1 {
   color: transparent;
   font-family: "Russo One", sans-serif;
   text-transform: uppercase;
-  font-size: 5em;
+  font-size: calc(28px + 4vw);
   transform: translatey(25px);
   background: linear-gradient(
     cornflowerblue 30%,
@@ -153,7 +151,7 @@ h2 {
   color: white;
   font-family: "Yellowtail", cursive;
   font-weight: 100;
-  font-size: 4em;
+  font-size: calc(22px + 4vw);
   transform: translatey(-10px) rotatez(-5deg);
   text-shadow: 0 0 3px magenta, 0 0 7px magenta, 0 0 15px black, 0 0 15px black;
   animation: hover 1s ease-in-out infinite;
@@ -171,58 +169,85 @@ img {
 }
 
 .top-scoreboard {
-  min-height: 20vh;
-  min-width: 600px;
-  width: 50%;
+  position: absolute;
   top: 0;
-  margin: 0.1em 25%;
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 25%;
+  margin: 0 auto;
+  justify-content: flex-start;
+  align-content: space-around;
+}
+
+.top-header {
+  top: 0;
+  width: 100%;
   height: auto;
+  text-align: center;
+  font-size: calc(28px + 5vh);
+  margin: 0.1em auto;
 }
 
 .top-table {
-  width: 50%;
-  margin: 0.5em 25%;
-  align-content: center;
-  font-size: 2em;
-}
-
-.top-tr {
-  min-width: 200px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
   width: 100%;
-  margin: 1em auto;
+  height: auto;
+  margin: 0.5em auto;
 }
-.top-td {
-  font-size: 3rem;
-  margin: 1em;
-  width: 50%;
-  max-width: 200px;
+.top-col {
+  font-size: 4em;
+  margin: 0 2vmax;
   font-family: digital;
   color: whitesmoke;
+  font-size: calc(18px + 4vh);
 }
 
 .settings {
-  min-height: 40px;
-  min-width: 40px;
-  max-height: 40px;
-  max-width: 40px;
+  min-height: calc(20px + 2vmin);
+  min-width: calc(20px + 2vmin);
+  max-height: calc(40px + 2vmin);
+  max-width: calc(40px + 2vmin);
   position: fixed;
   bottom: 2%;
   left: 2%;
   z-index: 10;
 }
+
+.lower-section {
+  position: absolute;
+  align-content: center;
+  justify-content: center;
+  display: flex;
+  width: 100%;
+  height: 75%;
+  bottom: 1em;
+}
 .housing {
+  align-content: center;
   position: relative;
-  top: 5vh;
-  padding: 10px;
-  width: 60vh;
-  height: 60vh;
-  min-width: 400px;
-  min-height: 400px;
+  width: calc(0.75 * min(var(--bodyWidth), var(--bodyHeight)));
+  width: calc(0.75 * min(var(--bodyWidth), var(--bodyHeight)));
   border-radius: 50%;
   background: rgba(143, 70, 89, 0.2);
   box-shadow: inset 0px 0px 7px 5px rgb(67, 83, 106),
     0px 0px 7px 5px rgb(67, 83, 106);
+  overflow: hidden;
+}
+.housing:before {
+  content: "";
+  display: block;
+  padding-top: 100%;
+}
+
+.housing-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 }
 
 .buttons {
@@ -284,7 +309,6 @@ img {
   text-align: center;
   overflow: hidden;
   line-height: 1em;
-  font-size: 18px;
 }
 .hub-btn {
   position: relative;
@@ -518,5 +542,18 @@ img {
   }
   100% {
     transform: translatey(-10px) rotatez(-5deg) perspective(200px) translatez(0);
+  }
+}
+
+@media screen and (orientation: portrait) {
+  .top-scoreboard {
+    height: 20%;
+  }
+  .lower-section {
+    height: 80%;
+  }
+  .housing {
+    width: calc(0.95 * min(var(--bodyWidth), var(--bodyHeight)));
+    height: calc(0.95 * min(var(--bodyWidth), var(--bodyHeight)));
   }
 }
