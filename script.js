@@ -82,9 +82,19 @@ if (loadLocal === null || loadLocal === undefined) {
 updateLeaderboard();
 
 // input events
-document.onmousedown = (mouseDownEvent) => {
-  colorEnum = color.indexOf(mouseDownEvent.target.id);
-  if (mouseDownEvent.target.id === "start") {
+if (isMobile) {
+  document.ontouchend = (touchEndEvents) => {
+    downPressEvent(touchEndEvents.target.id);
+  };
+} else {
+  document.onmousedown = (mouseDownEvent) => {
+    downPressEvent(mouseDownEvent.target.id);
+  };
+}
+
+function downPressEvent(id) {
+  colorEnum = color.indexOf(id);
+  if (id === "start") {
     clearTimeout(tooSlow);
     startSimon();
     return;
@@ -99,7 +109,7 @@ document.onmousedown = (mouseDownEvent) => {
   } else {
     colorEnum = null;
   }
-};
+}
 
 document.onclick = (clickEvent) => {
   console.log(clickEvent.target.id);
