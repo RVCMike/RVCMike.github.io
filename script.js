@@ -1,3 +1,9 @@
+const isMobile = navigator.userAgent.match(
+  /(iPhone|iPod|iPad|Android|BlackBerry|IEMobile)/
+)
+  ? true
+  : false;
+console.log(`Mobile: ${isMobile}`);
 const LEADERBOARD = "leaderboard";
 const color = ["red", "blue", "yellow", "green"];
 const buttons = document.getElementsByClassName("simon-btn");
@@ -13,7 +19,7 @@ const settingsModal = document.getElementById("settingsModal");
 const hiScoreModal = document.getElementById("hiScoreModal");
 const playerInitials = document.getElementById("initials");
 const rankModal = document.getElementById("yourRank");
-const fullLeaderboard = document.getElementById("fullLeaderboardModal");
+const fullLeaderboard = document.getElementById("full-Leader-Modal");
 const offOpacity = 0.5;
 const onOpacity = 1;
 const maxAudioChannels = 6;
@@ -99,7 +105,7 @@ document.onclick = (clickEvent) => {
   console.log(clickEvent.target.id);
   if (clickEvent.target.id == "settings") {
     settingsModal.style.display =
-      settingsModal.style.display == "block" ? "none" : "block";
+      settingsModal.style.display == "block" ? "none" : "flex";
   }
   if (clickEvent.target.className == "close") {
     settingsModal.style.display = "none";
@@ -118,7 +124,7 @@ document.onclick = (clickEvent) => {
 };
 
 document.onkeydown = function () {
-  if (window.event.keyCode == "13" && hiScoreModal.style.display == "block") {
+  if (window.event.keyCode == "13" && hiScoreModal.style.display == "flex") {
     closeLeaderModal();
   }
 };
@@ -249,7 +255,7 @@ function openLeaderModal() {
     console.log("Position: ", leaderboardPosition);
     yourRank.innerText = leaderboardPosition + 1;
     initials.value = "";
-    hiScoreModal.style.display = "block";
+    hiScoreModal.style.display = "flex";
   }
   startSimon();
 }
@@ -373,7 +379,7 @@ function leader(rank, initials, score) {
 }
 
 function showFullLeaderboard() {
-  fullLeaderboard.style.display = "block";
+  fullLeaderboard.style.display = "flex";
   let leaderTable = document.getElementById("leader-table");
   leaderTable.innerHTML = "";
   for (let a = 0; a < 5; a++) {
@@ -413,3 +419,29 @@ function padNum(num) {
 Array.prototype.insert = function (index, item) {
   this.splice(index, 0, item);
 };
+
+window.addEventListener("DOMContentLoaded", () => {
+  computeSizing();
+});
+window.addEventListener("resize", () => {
+  computeSizing();
+});
+
+function computeSizing() {
+  let html = document.getElementsByTagName("html")[0];
+  let upper = document.getElementById("top-scoreboard");
+  let lower = document.getElementById("lower-section");
+  let housing = document.getElementById("housing-content");
+  let maxSize =
+    Math.min(lower.clientHeight, lower.clientWidth) * (isMobile ? 0.96 : 0.98);
+  let strSize = Math.max(isMobile ? 200 : 350, maxSize) + "px";
+  let fontSize = Math.min(lower.clientHeight, lower.clientWidth) * 0.05;
+  let strFont = fontSize + "px";
+  console.log(`Set Simon Size to : ${strSize}`);
+  console.log(`Set Base Font ${fontSize}`);
+  housing.style.minHeight = strSize;
+  housing.style.minWidth = strSize;
+  housing.style.height = strSize;
+  housing.style.width = strSize;
+  html.style.setProperty("--font-size", strFont);
+}
