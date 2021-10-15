@@ -48,6 +48,7 @@ var currentPress = -1;
 var simonSays = new Array();
 var leaderboardArray = new Array();
 var audio = [];
+var touchAudio = [];
 var audioChannels = [];
 var currentAudioChannel = 0;
 
@@ -325,18 +326,15 @@ function startCountdown() {
 
 // button sound effects
 function buttonSound(buttonIndex) {
-  // if (victoryAudio.currentTime > 0) return;
-  // currentAudioChannel =
-  //   currentAudioChannel >= maxAudioChannels ? 0 : currentAudioChannel++;
-  // audioChannels[currentAudioChannel] = new Audio(audio[buttonIndex]);
-  // audioChannels[currentAudioChannel].play();
-  let audioElement = document.createElement(`audio`);
-  audioElement.src = audio[buttonIndex];
-  document.body.appendChild(audioElement);
+  let audioElement = new Audio(audio[buttonIndex]);
+  touchAudio.push(audioElement);
   audioElement.play();
 
   audioElement.onended = function () {
-    this.parentNode.removeChild(this);
+    const index = touchAudio.indexOf(this);
+    if (index > -1) {
+      touchAudio.splice(index, 1);
+    }
   };
 }
 
