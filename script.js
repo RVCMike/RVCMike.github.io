@@ -3,7 +3,9 @@ const isMobile = navigator.userAgent.match(
 )
   ? true
   : false;
-//console.log(`Mobile: ${isMobile}`);
+
+console.log(`Mobile: ${isMobile}`);
+document.getElementById("mobile").innerText = isMobile;
 const LEADERBOARD = "leaderboard";
 const color = ["red", "blue", "yellow", "green"];
 const buttons = document.getElementsByClassName("simon-btn");
@@ -49,7 +51,7 @@ var simonSays = new Array();
 var leaderboardArray = new Array();
 var audio = [];
 var touchAudio = [];
-var audioChannels = [];
+// var audioChannels = [];
 var currentAudioChannel = 0;
 
 audio[0] = "./audio/simonSound1.mp3";
@@ -185,19 +187,19 @@ function startSimon() {
     // typically the player will start at level one, but this is configurable
     for (let a = 0; a < startingLevel; a++) {
       simonSays[a] = randomColor();
-      audioChannels[a] = document.createElement("audio");
-    }
-    // initialize audio channels. This allows multiple sounds for fast clicking
-    for (let a = 0; a < maxAudioChannels; a++) {
-      audioChannels[a] = document.createElement("audio");
     }
     currentLevel = simonSays.length;
 
     // plays the intro audio and will wait till it's complete to start the clock
+    touchAudio.push(startAudio);
+    startAudio.play();
     startAudio.onended = function () {
+      const index = touchAudio.indexOf(this);
+      if (index > -1) {
+        touchAudio.splice(index, 1);
+      }
       startCountdown();
     };
-    startAudio.play();
     startButton.setAttribute("class", "hub-btn stop-click");
     startButton.innerText = "Stop";
   }
