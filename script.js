@@ -4,8 +4,8 @@ const isMobile = navigator.userAgent.match(
   ? true
   : false;
 
-console.log(`Mobile: ${isMobile}`);
-document.getElementById("mobile").innerText = isMobile;
+//console.log(`Mobile: ${isMobile}`);
+//document.getElementById("mobile").innerText = isMobile;
 const isIos = iOS();
 const LEADERBOARD = "leaderboard";
 const color = ["red", "blue", "yellow", "green"];
