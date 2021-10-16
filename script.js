@@ -29,10 +29,10 @@ const baseSpeed = 500;
 
 // TO-DO add these to a settings menu
 const difficulty = 3; // 1 to 3 : 3 being the hardest
-const countdownSecondsToStart = 2;
-const startingLevel = 2;
+const countdownSecondsToStart = 0;
+const startingLevel = 1;
 const tooSlowToPress = 5;
-const victory = 99;
+const victory = 10;
 //
 
 const simonSpeed = (4 - difficulty) * baseSpeed;
