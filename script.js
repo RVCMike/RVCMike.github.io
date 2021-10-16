@@ -307,7 +307,7 @@ function startCountdown() {
   }, (1 + countdownSecondsToStart) * 1000);
 }
 
-// button sound effects
+// #region button effects
 function buttonSound(buttonIndex) {
   let audioElement = new Audio(audio[buttonIndex]);
   touchAudio.push(audioElement);
@@ -321,34 +321,16 @@ function buttonSound(buttonIndex) {
   };
 }
 
-// button press effect
 function buttonEffect(buttonIndex) {
   let opacity = offOpacity;
-  let pressTimer = setInterval(function () {
-    if (opacity >= onOpacity) {
-      clearInterval(pressTimer);
-      buttons[buttonIndex].style.opacity = onOpacity;
-      let releaseTimer = setInterval(function () {
-        if (opacity <= offOpacity) {
-          clearInterval(releaseTimer);
-          buttons[buttonIndex].style.opacity = offOpacity;
-        }
-        buttons[buttonIndex].style.opacity = opacity;
-        opacity -= releaseDuration;
-      }, releaseDuration);
-    }
-    buttons[buttonIndex].style.opacity = opacity;
-    opacity += pressDuration;
-  }, pressDuration);
+  $(buttons[buttonIndex]).fadeTo(pressDuration, onOpacity, () => {
+    $(buttons[buttonIndex]).fadeTo(pressDuration, offOpacity);
+  });
 }
 
-function touchButtonPress(buttonIndex) {
-  buttons[buttonIndex].style.opacity = onOpacity;
-}
-function touchButtonRelease(buttonIndex) {
-  buttons[buttonIndex].style.opacity = offOpacity;
-}
+//#endregion
 
+// #region Leaderboard
 function updateLeaderboard() {
   leaderboardPosition = 6;
   //console.log(`Score: ${playerScore}`);
@@ -420,11 +402,12 @@ function showFullLeaderboard() {
   }
 }
 
-// helpers
-
 function saveLeaderboard() {
   localStorage.setItem(LEADERBOARD, JSON.stringify(leaderboardArray));
 }
+// #endregion
+
+// #region helpers
 
 function tooSlowTimer() {
   clearTimeout(tooSlow);
@@ -442,6 +425,8 @@ function padNum(num) {
 Array.prototype.insert = function (index, item) {
   this.splice(index, 0, item);
 };
+
+// #endregion
 
 window.addEventListener("DOMContentLoaded", () => {
   computeSizing();
