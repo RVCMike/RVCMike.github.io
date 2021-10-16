@@ -6,7 +6,10 @@ const isMobile = navigator.userAgent.match(
 
 //console.log(`Mobile: ${isMobile}`);
 //document.getElementById("mobile").innerText = isMobile;
-const isIos = iOS();
+
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioContext = new AudioContext();
+
 const LEADERBOARD = "leaderboard";
 const color = ["red", "blue", "yellow", "green"];
 const buttons = document.getElementsByClassName("simon-btn");
@@ -53,7 +56,7 @@ var simonSays = new Array();
 var leaderboardArray = new Array();
 var audio = [];
 var touchAudio = [];
-// var audioChannels = [];
+var audioChannels = [];
 var currentAudioChannel = 0;
 var timeouts = [];
 audio[0] = "./audio/simonSound1.mp3";
@@ -87,6 +90,7 @@ updateLeaderboard();
 
 // add listeners to the 4 game buttons
 for (var i = 0; i < gameButtons.length; i++) {
+  preLoadButtonSound(i);
   gameButtons[i].addEventListener("click", (clickEvent) => {
     colorEnum = color.indexOf(clickEvent.target.id);
     //console.log("Down: ", clickEvent.target.id);
@@ -107,7 +111,7 @@ startButton.addEventListener("click", (clickEvent) => {
 });
 
 document.onclick = (clickEvent) => {
-  console.log(clickEvent.target.id);
+  console.log("CLICKED: ", clickEvent.target.id);
   if (clickEvent.target.id == "settings") {
     settingsModal.style.display =
       settingsModal.style.display == "block" ? "none" : "flex";
@@ -155,6 +159,7 @@ function startSimon() {
     startButton.setAttribute("class", "hub-btn start-click");
     startButton.innerText = "Start";
   } else {
+    initializeButtonSounds();
     updateDisplay(0);
     playerScore = 0;
     gameActive = true;
@@ -308,17 +313,48 @@ function startCountdown() {
 }
 
 // #region button effects
-function buttonSound(buttonIndex) {
-  let audioElement = new Audio(audio[buttonIndex]);
-  touchAudio.push(audioElement);
-  audioElement.play();
+async function initializeButtonSounds() {
+  //console.log(audioChannels);
+  for (a of audioChannels) {
+    playTrack(a);
+    buttonEffect(audioChannels.indexOf(a));
+    await sleep(250);
+    //console.log("Sleep Done");
+  }
+}
 
-  audioElement.onended = function () {
-    const index = touchAudio.indexOf(this);
-    if (index > -1) {
-      touchAudio.splice(index, 1);
-    }
-  };
+function buttonSound(buttonIndex) {
+  playTrack(audioChannels[buttonIndex]);
+}
+
+async function preLoadButtonSound(buttonIndex) {
+  //console.log(audio[buttonIndex]);
+  let track = await loadFile(audio[buttonIndex]);
+  audioChannels[buttonIndex] = track;
+}
+
+function playTrack(audioBuffer) {
+  //console.log("Playing: ", audioChannels.indexOf(audioBuffer));
+  const trackSource = audioContext.createBufferSource();
+  trackSource.buffer = audioBuffer;
+  trackSource.connect(audioContext.destination);
+  if (audioContext.currentTime != 0) {
+    audioContext.currentTime = 0;
+  }
+  trackSource.start();
+}
+
+async function getFile(filepath) {
+  //console.log(filepath);
+  const response = await fetch(filepath);
+  const arrayBuffer = await response.arrayBuffer();
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+  return audioBuffer;
+}
+
+async function loadFile(filePath) {
+  const track = await getFile(filePath);
+  return track;
 }
 
 function buttonEffect(buttonIndex) {
@@ -408,6 +444,9 @@ function saveLeaderboard() {
 // #endregion
 
 // #region helpers
+async function sleep(ms) {
+  return await new Promise((r) => setTimeout(r, ms));
+}
 
 function tooSlowTimer() {
   clearTimeout(tooSlow);
@@ -428,6 +467,7 @@ Array.prototype.insert = function (index, item) {
 
 // #endregion
 
+// #region Responsive View
 window.addEventListener("DOMContentLoaded", () => {
   computeSizing();
 });
@@ -453,18 +493,4 @@ function computeSizing() {
   housing.style.width = strSize;
   html.style.setProperty("--font-size", strFont);
 }
-
-function iOS() {
-  return (
-    [
-      "iPad Simulator",
-      "iPhone Simulator",
-      "iPod Simulator",
-      "iPad",
-      "iPhone",
-      "iPod",
-    ].includes(navigator.platform) ||
-    // iPad on iOS 13 detection
-    (navigator.userAgent.includes("Mac") && "ontouchend" in document)
-  );
-}
+// #endregion
