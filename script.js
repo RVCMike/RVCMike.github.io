@@ -484,8 +484,9 @@ function computeSizing() {
   let upper = document.getElementById("top-scoreboard");
   let lower = document.getElementById("lower-section");
   let housing = document.getElementById("housing-content");
+  let screenWidth = screen.width;
   let maxSize =
-    Math.min(lower.clientHeight, lower.clientWidth) * (isMobile ? 0.96 : 0.98);
+    Math.min(lower.clientHeight, lower.clientWidth) * (isMobile ? 0.94 : 0.98);
   let strSize = Math.max(isMobile ? 200 : 350, maxSize) + "px";
   let fontSize = Math.min(lower.clientHeight, lower.clientWidth) * 0.05;
   let strFont = fontSize + "px";

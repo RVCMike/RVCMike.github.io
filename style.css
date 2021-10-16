@@ -41,8 +41,8 @@ body {
   display: block;
   width: 99vw;
   height: 99vh;
-  min-width: 400px;
-  min-height: 400px;
+  min-width: 350px;
+  min-height: 350px;
   background: black;
   filter: saturate(130%) contrast(125%);
 }
