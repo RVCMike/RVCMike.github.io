@@ -89,7 +89,7 @@ if (loadLocal === null || loadLocal === undefined) {
 updateLeaderboard();
 
 // add listeners to the 4 game buttons
-for (var i = 0; i < gameButtons.length; i++) {
+for (let i = 0; i < gameButtons.length; i++) {
   preLoadButtonSound(i);
   gameButtons[i].addEventListener("click", (clickEvent) => {
     colorEnum = color.indexOf(clickEvent.target.id);
@@ -327,14 +327,31 @@ function buttonSound(buttonIndex) {
   playTrack(audioChannels[buttonIndex]);
 }
 
+// Add all your audio paths to an array
+// then use a for loop to iterate through that array
+// for (let i = 0; i < gameButtons.length; i++) {
+//  preLoadButtonSound(i);
+// }
+// once your files are pre-load, you will need initilize the sounds
+// to work on iOS by trigging some automated sequence via userInput
 async function preLoadButtonSound(buttonIndex) {
-  //console.log(audio[buttonIndex]);
-  let track = await loadFile(audio[buttonIndex]);
-  audioChannels[buttonIndex] = track;
+  // the initializer will call load file.
+  // this async function means that it will not add the track
+  // until it has completed loading the track
+  audioChannels[buttonIndex] = await loadFile(audio[buttonIndex]);
+}
+
+// when loadFile is called this function will get the file
+// and return it to preLoadButtonSound
+// this loads the decoded sound file into memory
+async function loadFile(filepath) {
+  const response = await fetch(filepath);
+  const arrayBuffer = await response.arrayBuffer();
+  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+  return audioBuffer;
 }
 
 function playTrack(audioBuffer) {
-  //console.log("Playing: ", audioChannels.indexOf(audioBuffer));
   const trackSource = audioContext.createBufferSource();
   trackSource.buffer = audioBuffer;
   trackSource.connect(audioContext.destination);
@@ -342,19 +359,6 @@ function playTrack(audioBuffer) {
     audioContext.currentTime = 0;
   }
   trackSource.start();
-}
-
-async function getFile(filepath) {
-  //console.log(filepath);
-  const response = await fetch(filepath);
-  const arrayBuffer = await response.arrayBuffer();
-  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-  return audioBuffer;
-}
-
-async function loadFile(filePath) {
-  const track = await getFile(filePath);
-  return track;
 }
 
 function buttonEffect(buttonIndex) {
