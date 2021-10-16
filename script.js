@@ -6,6 +6,7 @@ const isMobile = navigator.userAgent.match(
 
 console.log(`Mobile: ${isMobile}`);
 document.getElementById("mobile").innerText = isMobile;
+const isIos = iOS();
 const LEADERBOARD = "leaderboard";
 const color = ["red", "blue", "yellow", "green"];
 const buttons = document.getElementsByClassName("simon-btn");
@@ -13,6 +14,7 @@ const startButton = document.getElementById("start");
 const topInitials = document.getElementById("top-initials");
 const topScore = document.getElementById("top-score");
 const startAudio = new Audio("./audio/Shall-we-play-a-game.mp3");
+const gameButtons = document.getElementsByClassName("simon-btn");
 const gameOverAudio = new Audio("./audio/Pacman-death-sound.mp3");
 const victoryAudio = new Audio("./audio/victory.mp3");
 const scoreOutput = document.getElementById("score");
@@ -53,7 +55,7 @@ var audio = [];
 var touchAudio = [];
 // var audioChannels = [];
 var currentAudioChannel = 0;
-
+var timeouts = [];
 audio[0] = "./audio/simonSound1.mp3";
 audio[1] = "./audio/simonSound2.mp3";
 audio[2] = "./audio/simonSound3.mp3";
@@ -83,53 +85,26 @@ if (loadLocal === null || loadLocal === undefined) {
 }
 updateLeaderboard();
 
-// input events
-if (isMobile) {
-  document.ontouchstart = (touchEvent) => {
-    //console.log(`Touch Press: ${touchEvent.target.id}`);
-    downPressEvent(touchEvent.target.id);
-  };
-  document.ontouchend = (touchEvent) => {
-    //console.log(`Touch Release: ${touchEvent.target.id}`);
-    releasePressEvent(touchEvent.target.id);
-  };
-} else {
-  document.onmousedown = (mouseDownEvent) => {
-    downPressEvent(mouseDownEvent.target.id);
-  };
-}
-
-function downPressEvent(id) {
-  colorEnum = color.indexOf(id);
-  if (id === "start") {
-    clearTimeout(tooSlow);
-    startSimon();
-    return;
-  }
-  if (colorEnum >= 0 && gameActive && !wait) {
-    currentPress++;
-    //console.log(`Pressed: ${colorEnum} turn: ${currentPress}`);
-    clearTimeout(tooSlow);
-    tooSlowTimer();
-    checkforMatch(colorEnum);
-    if (isMobile) {
-      touchButtonPress(colorEnum);
-      buttonSound(colorEnum);
-    } else {
+// add listeners to the 4 game buttons
+for (var i = 0; i < gameButtons.length; i++) {
+  gameButtons[i].addEventListener("click", (clickEvent) => {
+    colorEnum = color.indexOf(clickEvent.target.id);
+    //console.log("Down: ", clickEvent.target.id);
+    if (gameActive && !wait) {
+      currentPress++;
+      //console.log(`Pressed: ${colorEnum} turn: ${currentPress}`);
+      clearTimeout(tooSlow);
+      tooSlowTimer();
+      checkforMatch(colorEnum);
       buttonAction(colorEnum);
     }
-  } else {
-    colorEnum = null;
-  }
+  });
 }
 
-function releasePressEvent(id) {
-  let colorRelease = color.indexOf(id);
-  if (colorRelease >= 0 && gameActive) {
-    //console.log(`Release:${colorRelease}`);
-    touchButtonRelease(colorRelease);
-  }
-}
+startButton.addEventListener("click", (clickEvent) => {
+  clearTimeout(tooSlow);
+  startSimon();
+});
 
 document.onclick = (clickEvent) => {
   console.log(clickEvent.target.id);
@@ -164,14 +139,19 @@ function buttonAction(num) {
   buttonSound(num);
   buttonEffect(num);
 }
+
 function startSimon() {
   if (victoryAudio.currentTime > 0) {
     victoryAudio.pause();
     victoryAudio.currentTime = 0;
   }
   if (gameActive) {
-    scoreOutput.innerText = "RDY";
     gameActive = false;
+    if (startAudio.currentTime > 0) {
+      startAudio.pause();
+      startAudio.currentTime = 0;
+    }
+    scoreOutput.innerText = "RDY";
     startButton.setAttribute("class", "hub-btn start-click");
     startButton.innerText = "Start";
   } else {
@@ -194,6 +174,7 @@ function startSimon() {
     touchAudio.push(startAudio);
     startAudio.play();
     startAudio.onended = function () {
+      if (!gameActive) return;
       const index = touchAudio.indexOf(this);
       if (index > -1) {
         touchAudio.splice(index, 1);
@@ -486,4 +467,19 @@ function computeSizing() {
   housing.style.height = strSize;
   housing.style.width = strSize;
   html.style.setProperty("--font-size", strFont);
+}
+
+function iOS() {
+  return (
+    [
+      "iPad Simulator",
+      "iPhone Simulator",
+      "iPod Simulator",
+      "iPad",
+      "iPhone",
+      "iPod",
+    ].includes(navigator.platform) ||
+    // iPad on iOS 13 detection
+    (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+  );
 }
