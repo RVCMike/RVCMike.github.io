@@ -67,7 +67,6 @@ var currentPress = -1;
 var simonSays = new Array();
 var leaderboardArray = new Array();
 var audio = [];
-var touchAudio = [];
 var audioChannels = [];
 var currentAudioChannel = 0;
 var timeouts = [];
@@ -168,6 +167,7 @@ function buttonAction(num) {
 }
 
 function startSimon() {
+  //console.log(isMuted);
   if (victoryAudio.currentTime > 0) {
     victoryAudio.pause();
     victoryAudio.currentTime = 0;
@@ -199,7 +199,6 @@ function startSimon() {
     currentLevel = simonSays.length;
 
     // plays the intro audio and will wait till it's complete to start the clock
-    touchAudio.push(startAudio);
     if (isMuted) {
       postStartAudio();
     } else {
@@ -208,15 +207,12 @@ function startSimon() {
       };
       startButton.setAttribute("class", "hub-btn stop-click");
       startButton.innerText = "Stop";
+      startAudio.play();
     }
   }
 }
 function postStartAudio() {
   if (!gameActive) return;
-  const index = touchAudio.indexOf(this);
-  if (index > -1) {
-    touchAudio.splice(index, 1);
-  }
   startCountdown();
 }
 
