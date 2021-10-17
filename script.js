@@ -202,12 +202,12 @@ function startSimon() {
     console.log(isMuted);
     startButton.setAttribute("class", "hub-btn stop-click");
     startButton.innerText = "Stop";
+    startAudio.onended = function () {
+      postStartAudio();
+    };
     if (isMuted) {
       postStartAudio();
     } else {
-      startAudio.onended = function () {
-        postStartAudio();
-      };
       startAudio.play();
     }
   }
