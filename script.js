@@ -12,6 +12,7 @@ const audioContext = new AudioContext();
 
 const LEADERBOARD = "leaderboard";
 const DIFFICULTY = "difficulty";
+const MUTED = "muted";
 const VICTORY = "victory";
 const color = ["red", "blue", "yellow", "green"];
 const buttons = document.getElementsByClassName("simon-btn");
@@ -31,6 +32,9 @@ const rankModal = document.getElementById("yourRank");
 const fullLeaderboard = document.getElementById("full-Leader-Modal");
 const maxLevelInput = document.getElementById("maxLevel");
 const difficultyInput = document.getElementById("difficulty");
+const muteControlImage = document.getElementById("mute");
+const mutedIcon = "./images/icon_mute.png";
+const unmutedIcon = "./images/icon_unmute.png";
 const offOpacity = 0.5;
 const onOpacity = 1;
 const maxAudioChannels = 6;
@@ -75,6 +79,10 @@ audio[2] = "./audio/simonSound3.mp3";
 audio[3] = "./audio/simonSound4.mp3";
 startAudio.volume = 0.2;
 gameOverAudio.volume = 0.2;
+
+const str = localStorage.getItem(MUTED);
+isMuted = str == "true" ? true : false;
+muteControlImage.setAttribute("src", isMuted ? mutedIcon : unmutedIcon);
 
 function initialize() {
   updateSimonSpeed();
@@ -125,6 +133,11 @@ function assignEventListeners() {
     if (clickEvent.target.id == "settings") {
       settingsModal.style.display =
         settingsModal.style.display == "block" ? "none" : "flex";
+    }
+    if (clickEvent.target.id == "mute") {
+      isMuted = !isMuted;
+      muteControlImage.setAttribute("src", isMuted ? mutedIcon : unmutedIcon);
+      localStorage.setItem(MUTED, isMuted);
     }
     if (clickEvent.target.className == "close") {
       settingsModal.style.display = "none";
@@ -187,18 +200,24 @@ function startSimon() {
 
     // plays the intro audio and will wait till it's complete to start the clock
     touchAudio.push(startAudio);
-    startAudio.play();
-    startAudio.onended = function () {
-      if (!gameActive) return;
-      const index = touchAudio.indexOf(this);
-      if (index > -1) {
-        touchAudio.splice(index, 1);
-      }
-      startCountdown();
-    };
-    startButton.setAttribute("class", "hub-btn stop-click");
-    startButton.innerText = "Stop";
+    if (isMuted) {
+      postStartAudio();
+    } else {
+      startAudio.onended = function () {
+        postStartAudio();
+      };
+      startButton.setAttribute("class", "hub-btn stop-click");
+      startButton.innerText = "Stop";
+    }
   }
+}
+function postStartAudio() {
+  if (!gameActive) return;
+  const index = touchAudio.indexOf(this);
+  if (index > -1) {
+    touchAudio.splice(index, 1);
+  }
+  startCountdown();
 }
 
 // this is simon's brain. Simon shows the player the sequence
@@ -246,7 +265,7 @@ function victoryMarch() {
   scoreOutput.innerText = "WIN";
   replay = true;
   wait = true;
-  victoryAudio.play();
+  if (!isMuted) victoryAudio.play();
   setTimeout(() => {
     playback();
     setTimeout(() => {
@@ -262,12 +281,19 @@ function gameOver() {
   replay = true;
   wait = true;
   gameOverAudio.onended = function () {
-    playback();
-    setTimeout(() => {
-      openLeaderModal();
-    }, currentLevel * simonSpeed + 1000);
+    gameOverRecap();
   };
-  gameOverAudio.play();
+  if (isMuted) {
+    gameOverRecap();
+  } else {
+    gameOverAudio.play();
+  }
+}
+function gameOverRecap() {
+  playback();
+  setTimeout(() => {
+    openLeaderModal();
+  }, currentLevel * simonSpeed + 1000);
 }
 
 function openLeaderModal() {
@@ -320,6 +346,7 @@ function startCountdown() {
 
 // #region button effects
 async function initializeButtonSounds() {
+  if (isMuted) return;
   //console.log(audioChannels);
   for (a of audioChannels) {
     playTrack(a);
@@ -364,7 +391,7 @@ function playTrack(audioBuffer) {
   if (audioContext.currentTime != 0) {
     audioContext.currentTime = 0;
   }
-  trackSource.start();
+  if (!isMuted) trackSource.start();
 }
 
 function buttonEffect(buttonIndex) {

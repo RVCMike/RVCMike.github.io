@@ -223,6 +223,17 @@ img {
   z-index: 10;
 }
 
+.mute {
+  min-height: calc(20px + 2vmin);
+  min-width: calc(20px + 2vmin);
+  max-height: calc(40px + 2vmin);
+  max-width: calc(40px + 2vmin);
+  position: fixed;
+  bottom: 2%;
+  right: 2%;
+  z-index: 10;
+}
+
 .lower-section {
   display: flex;
   align-items: center;
