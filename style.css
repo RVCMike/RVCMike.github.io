@@ -434,8 +434,8 @@ img {
   margin: 0.2em;
   padding: 0.1em;
   font-size: 1em;
-  width: 3em;
-  height: 1.2em;
+  width: 3.5em;
+  height: 1.5em;
   text-align: center;
   border: 0.1em solid;
   border-color: darkmagenta magenta;
@@ -493,6 +493,67 @@ img {
   cursor: pointer;
 }
 
+#settings-tbl {
+  font-family: "Russo One", sans-serif;
+  font-size: 0.6em;
+  margin: auto;
+  height: 60%;
+  width: 100%;
+  border-radius: 20px;
+  padding: 10px 10px 10px;
+}
+.settings-td {
+  width: auto;
+  margin: 2px;
+  padding: 5px;
+}
+.spinner {
+  font-size: 1em;
+  display: flex;
+  margin: 0;
+  height: 1.2em;
+  padding: 0;
+  align-items: center;
+  background-color: wheat;
+  border-radius: 20%;
+}
+
+.spinner-btn {
+  font-size: inherit;
+  height: inherit;
+  min-width: 1.5em;
+  color: slateblue;
+  background-color: wheat;
+  vertical-align: middle;
+  border: solid wheat 2px;
+}
+.spinner-btn:hover,
+.spinner-btm:focus {
+  opacity: 1;
+  color: var(--dark-navy);
+  background: var(--pink2);
+  text-decoration: none;
+  cursor: pointer;
+}
+.spinner-btn:focus {
+  opacity: 1;
+}
+.spinner-class {
+  font-size: inherit;
+  width: 4ch;
+  height: 100%;
+  text-align: center;
+  border: none;
+  background-color: wheat;
+}
+.left-btn {
+  border-radius: 20% 0 0 20%;
+  border-right: 0;
+}
+
+.right-btn {
+  border-radius: 0 20% 20% 0;
+}
 @keyframes move {
   to {
     background-position-y: 2000px;

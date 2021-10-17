@@ -45,8 +45,32 @@
                 <!-- <div id="mobile"></div> -->
             </div>
             <div>
-                <div style="text-align: center">Leaderboard</div>
-                <button id="reset" class ="btn">Reset</button>
+                <div style="width: 100%;">
+                    <div style="text-align: center">Leaderboard</div>
+                    <button id="reset" class ="btn">Reset</button>
+                    <table id="settings-tbl" class="settings-tbl">
+                        <tr>
+                            <td class="settings-td">Max Levels</td>
+                            <td>
+                                <div class="spinner" data-trigger="spinner">
+                                    <button class="spinner-btn left-btn" onclick="this.parentNode.querySelector('#maxLevel').stepDown()">-</button>
+                                    <input id="maxLevel" class="spinner-class" type="number" value="10" min="6" max="999" maxlength="3" minlength="2">
+                                    <button class="spinner-btn right-btn" onclick="this.parentNode.querySelector('#maxLevel').stepUp()">+</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="settings-td">Difficulty</td>
+                            <td>
+                                <div class="spinner" data-trigger="spinner">
+                                    <button class="spinner-btn left-btn" onclick="this.parentNode.querySelector('#difficulty').stepDown()">-</button>
+                                    <input id="difficulty" class="spinner-class" type="number" value="1" min="1" max="5" maxlength="1" minlength="1">
+                                    <button class="spinner-btn right-btn" onclick="this.parentNode.querySelector('#difficulty').stepUp()">+</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -72,9 +96,8 @@
             <div class="leader-content">
                 <h2>Leaderboard</h2>
             </div>
+            <div style="width: 100%;">
                 <table id="leader-table" class="leader-table"></table>
-            <div>
-
             </div>
         </div>
     </div>

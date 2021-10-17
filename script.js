@@ -11,6 +11,8 @@ const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioContext = new AudioContext();
 
 const LEADERBOARD = "leaderboard";
+const DIFFICULTY = "difficulty";
+const VICTORY = "victory";
 const color = ["red", "blue", "yellow", "green"];
 const buttons = document.getElementsByClassName("simon-btn");
 const startButton = document.getElementById("start");
@@ -27,20 +29,26 @@ const hiScoreModal = document.getElementById("hiScoreModal");
 const playerInitials = document.getElementById("initials");
 const rankModal = document.getElementById("yourRank");
 const fullLeaderboard = document.getElementById("full-Leader-Modal");
+const maxLevelInput = document.getElementById("maxLevel");
+const difficultyInput = document.getElementById("difficulty");
 const offOpacity = 0.5;
 const onOpacity = 1;
 const maxAudioChannels = 6;
 const baseSpeed = 500;
 
 // TO-DO add these to a settings menu
-const difficulty = 3; // 1 to 3 : 3 being the hardest
+var difficultyLevel = localStorage.getItem(DIFFICULTY);
+difficultyLevel ??= 1;
+var currentLevel = 0;
 const countdownSecondsToStart = 0;
 const startingLevel = 1;
 const tooSlowToPress = 5;
-const victory = 10;
+var victoryLevel = localStorage.getItem(VICTORY);
+victoryLevel ??= 10;
+var simonSpeed = 1;
 //
-
-const simonSpeed = (4 - difficulty) * baseSpeed;
+maxLevelInput.value = victoryLevel;
+difficultyInput.value = difficultyLevel;
 const pressDuration = baseSpeed / 4;
 const releaseDuration = pressDuration / 2;
 var tooSlow;
@@ -48,7 +56,7 @@ var colorEnum;
 var gameActive = false;
 var replay = false;
 var wait = false;
-var currentLevel = 0;
+
 var playerScore = 0;
 var leaderboardPosition = 6;
 var currentPress = -1;
@@ -59,85 +67,87 @@ var touchAudio = [];
 var audioChannels = [];
 var currentAudioChannel = 0;
 var timeouts = [];
+const loadLocal = localStorage.getItem(LEADERBOARD);
+
 audio[0] = "./audio/simonSound1.mp3";
 audio[1] = "./audio/simonSound2.mp3";
 audio[2] = "./audio/simonSound3.mp3";
 audio[3] = "./audio/simonSound4.mp3";
-
 startAudio.volume = 0.2;
 gameOverAudio.volume = 0.2;
 
-//this populates the leadboard with no values
-//TO-DO Persistent leaderboard
-//localStorage.clear();
-const loadLocal = localStorage.getItem(LEADERBOARD);
-if (loadLocal === null || loadLocal === undefined) {
-  for (let a = 0; a < 5; a++) {
-    let obj = {
-      initials: "---",
-      score: 0,
-    };
-    leaderboardArray[a] = obj;
-  }
-} else {
-  var obj = JSON.parse(loadLocal);
-  for (var i in obj) {
-    leaderboardArray.push(obj[i]);
-  }
-  // console.log(leaderboardArray);
-}
-updateLeaderboard();
-
-// add listeners to the 4 game buttons
-for (let i = 0; i < gameButtons.length; i++) {
-  preLoadButtonSound(i);
-  gameButtons[i].addEventListener("click", (clickEvent) => {
-    colorEnum = color.indexOf(clickEvent.target.id);
-    //console.log("Down: ", clickEvent.target.id);
-    if (gameActive && !wait) {
-      currentPress++;
-      //console.log(`Pressed: ${colorEnum} turn: ${currentPress}`);
-      clearTimeout(tooSlow);
-      tooSlowTimer();
-      checkforMatch(colorEnum);
-      buttonAction(colorEnum);
+function initialize() {
+  updateSimonSpeed();
+  if (loadLocal === null || loadLocal === undefined) {
+    for (let a = 0; a < 5; a++) {
+      let obj = {
+        initials: "---",
+        score: 0,
+      };
+      leaderboardArray[a] = obj;
     }
-  });
+  } else {
+    var obj = JSON.parse(loadLocal);
+    for (var i in obj) {
+      leaderboardArray.push(obj[i]);
+    }
+    // console.log(leaderboardArray);
+  }
+  updateLeaderboard();
+  // add listeners to the 4 game buttons
+  for (let i = 0; i < gameButtons.length; i++) {
+    preLoadButtonSound(i);
+    gameButtons[i].addEventListener("click", (clickEvent) => {
+      colorEnum = color.indexOf(clickEvent.target.id);
+      //console.log("Down: ", clickEvent.target.id);
+      if (gameActive && !wait) {
+        currentPress++;
+        //console.log(`Pressed: ${colorEnum} turn: ${currentPress}`);
+        clearTimeout(tooSlow);
+        tooSlowTimer();
+        checkforMatch(colorEnum);
+        buttonAction(colorEnum);
+      }
+    });
+  }
+  assignEventListeners();
+  initializeSettings();
 }
 
-startButton.addEventListener("click", (clickEvent) => {
-  clearTimeout(tooSlow);
-  startSimon();
-});
+function assignEventListeners() {
+  startButton.addEventListener("click", (clickEvent) => {
+    clearTimeout(tooSlow);
+    startSimon();
+  });
 
-document.onclick = (clickEvent) => {
-  console.log("CLICKED: ", clickEvent.target.id);
-  if (clickEvent.target.id == "settings") {
-    settingsModal.style.display =
-      settingsModal.style.display == "block" ? "none" : "flex";
-  }
-  if (clickEvent.target.className == "close") {
-    settingsModal.style.display = "none";
-  }
-  if (clickEvent.target == settingsModal) {
-    settingsModal.style.display = "none";
-  }
-  if (clickEvent.target.id == "submit") {
-    closeLeaderModal();
-  }
-  if (clickEvent.target.id == "reset") clearLeaderboard();
-  if (clickEvent.target.id.includes("top-")) showFullLeaderboard();
-  if (clickEvent.target == fullLeaderboard) {
-    fullLeaderboard.style.display = "none";
-  }
-};
+  document.onclick = (clickEvent) => {
+    //console.log("CLICKED: ", clickEvent.target.id);
+    if (clickEvent.target.id == "settings") {
+      settingsModal.style.display =
+        settingsModal.style.display == "block" ? "none" : "flex";
+    }
+    if (clickEvent.target.className == "close") {
+      settingsModal.style.display = "none";
+    }
+    if (clickEvent.target == settingsModal) {
+      settingsModal.style.display = "none";
+    }
+    if (clickEvent.target.id == "submit") {
+      closeLeaderModal();
+    }
+    if (clickEvent.target.id == "reset") clearLeaderboard();
+    if (clickEvent.target.id.includes("top-")) showFullLeaderboard();
+    if (clickEvent.target == fullLeaderboard) {
+      fullLeaderboard.style.display = "none";
+    }
+  };
 
-document.onkeydown = function () {
-  if (window.event.keyCode == "13" && hiScoreModal.style.display == "flex") {
-    closeLeaderModal();
-  }
-};
-// end of input events
+  document.onkeydown = function () {
+    if (window.event.keyCode == "13" && hiScoreModal.style.display == "flex") {
+      closeLeaderModal();
+    }
+  };
+}
 
 function buttonAction(num) {
   buttonSound(num);
@@ -212,16 +222,11 @@ function playback() {
 
 // checks to see if the player pressed the correct button at the right time
 function checkforMatch(buttonIndex) {
-  // console.log(
-  //   `Pressed: ${buttonIndex} | Expected: ${[
-  //     simonSays[currentPress],
-  //   ]} @ ${currentPress}`
-  // );
   if (simonSays[currentPress] == buttonIndex) {
     // console.log("Correct");
     if (currentPress == currentLevel - 1) {
       // console.log("Success");
-      if (currentLevel >= victory) {
+      if (currentLevel >= victoryLevel) {
         victoryMarch();
       } else {
         levelComplete();
@@ -235,7 +240,7 @@ function checkforMatch(buttonIndex) {
 
 // victory march
 function victoryMarch() {
-  playerScore = victory;
+  playerScore = victoryLevel;
   updateLeaderboard();
   clearTimeout(tooSlow);
   scoreOutput.innerText = "WIN";
@@ -283,6 +288,7 @@ function levelComplete() {
   currentPress = -1;
   playerScore = currentLevel;
   currentLevel++;
+  updateSimonSpeed();
   // console.log(`current press ${currentPress} | Current level ${currentLevel}`);
   setTimeout(() => {
     playback();
@@ -447,6 +453,27 @@ function saveLeaderboard() {
 }
 // #endregion
 
+// #region Settings
+function initializeSettings() {
+  localStorage.setItem(VICTORY, victoryLevel);
+  localStorage.setItem(DIFFICULTY, difficultyLevel);
+  document.getElementById("maxLevel").addEventListener("change", (event) => {
+    victoryLevel = event.target.value;
+  });
+
+  const levelButtons = document.getElementsByClassName("spinner-btn");
+  Array.from(levelButtons).forEach((btn) =>
+    btn.addEventListener("click", (event) => {
+      victoryLevel = document.getElementById("maxLevel").value;
+      difficultyLevel = document.getElementById("difficulty").value;
+      console.log(`V: ${victoryLevel} | D: ${difficultyLevel}`);
+      localStorage.setItem(VICTORY, victoryLevel);
+      localStorage.setItem(DIFFICULTY, difficultyLevel);
+    })
+  );
+}
+// #endregion
+
 // #region helpers
 async function sleep(ms) {
   return await new Promise((r) => setTimeout(r, ms));
@@ -469,6 +496,18 @@ Array.prototype.insert = function (index, item) {
   this.splice(index, 0, item);
 };
 
+const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+
+function updateSimonSpeed() {
+  simonSpeed = clamp(
+    -5 * Math.pow(currentLevel, 2) -
+      5 * currentLevel +
+      (1510 - 1000 * ((difficultyLevel - 1) / 5)),
+    250,
+    1750
+  );
+  //console.log("Speed: ", simonSpeed);
+}
 // #endregion
 
 // #region Responsive View
@@ -499,3 +538,4 @@ function computeSizing() {
   html.style.setProperty("--font-size", strFont);
 }
 // #endregion
+initialize();
