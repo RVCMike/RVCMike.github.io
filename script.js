@@ -167,7 +167,7 @@ function buttonAction(num) {
 }
 
 function startSimon() {
-  //console.log(isMuted);
+  //+console.log(isMuted);
   if (victoryAudio.currentTime > 0) {
     victoryAudio.pause();
     victoryAudio.currentTime = 0;
@@ -199,14 +199,15 @@ function startSimon() {
     currentLevel = simonSays.length;
 
     // plays the intro audio and will wait till it's complete to start the clock
+    console.log(isMuted);
+    startButton.setAttribute("class", "hub-btn stop-click");
+    startButton.innerText = "Stop";
     if (isMuted) {
       postStartAudio();
     } else {
       startAudio.onended = function () {
         postStartAudio();
       };
-      startButton.setAttribute("class", "hub-btn stop-click");
-      startButton.innerText = "Stop";
       startAudio.play();
     }
   }
